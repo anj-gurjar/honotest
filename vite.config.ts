@@ -8,9 +8,11 @@ export default defineConfig({
   plugins: [
     honox({
       devServer: { adapter },
-      client: { input: ['./app/style.css'] }
+      client: { input: ['./app/style.css'] },
+       external: ["pg"]
     }),
     tailwindcss(),
+    
     build()
   ]
 })
