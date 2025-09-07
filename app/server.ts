@@ -1,9 +1,11 @@
-import { showRoutes } from 'hono/dev'
-import { createApp } from 'honox/server'
-import { connect} from './database/postgres'
+import { showRoutes } from "hono/dev";
+import { createApp } from "honox/server";
+import { connect } from "./database";
 
-const app = createApp()
+const app = createApp();
 
-showRoutes(app)
-connect()
-export default app
+showRoutes(app);
+
+connect();
+
+export default app;

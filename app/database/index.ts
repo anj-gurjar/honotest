@@ -1,14 +1,9 @@
-import * as postrges from './postgres/index'
+import * as postgres from "./postgres/index";
 
+export const connect = async () => {
+  await Promise.all([postgres.connect()]);
+};
 
-export const connect=async()=>{
-    await Promise.all([
-        postrges.connect()
-    ])
-}
-export const disconenct=async()=>{
-    await Promise.all([
-        postrges.disconnect()
-    ])
-
-}
+export const disconnect = async () => {
+  await Promise.all([postgres.disconnect()]);
+};
