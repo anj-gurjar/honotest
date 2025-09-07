@@ -4,6 +4,11 @@ import type { Context, Next } from 'hono'
 export const routerLogger = (routeName: string, message?: string) => {
   return async (c: Context, next: Next) => {
     const start = Date.now()
+    
+const logger = {
+  info: console.log,
+  error: console.error,
+}
 
     // Log route info
     logger.info({
