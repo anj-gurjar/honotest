@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build --mode client && vite build",
-    "preview": "node --env-file=.env dist/index.js"
+    "preview": "node --env-file=.env dist/index.js",
+    "migration": "drizzle-kit"
   },
   "private": true,
   "dependencies": {
