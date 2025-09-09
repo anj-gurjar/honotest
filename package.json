@@ -13,12 +13,16 @@
     "drizzle-orm": "^0.44.5",
     "hono": "^4.9.6",
     "honox": "^0.1.45",
+    "jsonwebtoken": "^9.0.2",
+    "jwk-to-pem": "^2.0.7",
     "pg": "^8.16.3"
   },
   "devDependencies": {
     "@hono/vite-build": "^1.3.0",
     "@hono/vite-dev-server": "^0.18.2",
     "@tailwindcss/vite": "^4.0.9",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/jwk-to-pem": "^2.0.3",
     "@types/pg": "^8.15.5",
     "tailwindcss": "^4.0.9",
     "typescript": "5.5",

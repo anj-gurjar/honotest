@@ -6,6 +6,4 @@ const app = createApp();
 
 showRoutes(app);
 
-connect();
-
 export default app;
