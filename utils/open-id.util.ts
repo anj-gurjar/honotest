@@ -41,12 +41,7 @@ export async function getJwks(): Promise<Jwks> {
   return jwks;
 }
 
-export async function getIdTokenKey(): Promise<Jwk | undefined> {
+export async function getJwkByKid(kid: string): Promise<Jwk | undefined> {
   const jwks = await getJwks();
-  return jwks.keys.find((k) => k.use === "sig");
-}
-
-export async function getAccessTokenKey(): Promise<Jwk | undefined> {
-  const jwks = await getJwks();
-  return jwks.keys.find((k) => k.use === "sig");
+  return jwks.keys.find((k) => k.kid === kid && k.use === "sig");
 }

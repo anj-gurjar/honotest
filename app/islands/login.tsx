@@ -1,23 +1,16 @@
-import { useState } from "hono/jsx";
+// src/islands/Login.tsx
+import { Link } from "honox/server";
 
 export default function Login() {
-  const [user, setUser] = useState<string | null>(null);
-
-  const handleLogin = async () => {
-    try {
-      // Redirect user to backend route for authorization
-      window.location.href = "/oauth/authorize";
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   return (
-    <header class={"kj"}>
-      <button
-        onClick={handleLogin}
-        class="px-4 py-2 bg-orange-400 text-white rounded cursor-pointer"
-      ></button>
+    <header class="p-4 bg-gray-200 flex justify-between">
+      <h1 class="font-bold">MyApp</h1>
+      <Link
+        href="/oauth/authorize"
+        class="bg-blue-500 text-white px-4 py-2 rounded"
+      >
+        Login with ahm
+      </Link>
     </header>
   );
 }

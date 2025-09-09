@@ -1,50 +1,39 @@
-// callback-handler.ts
-import type { Context } from "hono";
+// src/routes/oauth/callback.tsx
+import { createRoute } from "honox/factory";
+import { getConfig } from "../../../utils/open-id.util";
 
-export const callbackHandler = async (c: Context) => {
-  try {
-    const url = new URL(c.req.url);
-    const params = url.searchParams;
+export default createRoute(async (c) => {
+  const url = new URL(c.req.url);
+  const code = url.searchParams.get("code");
+  const state = url.searchParams.get("state");
 
-    const codeChallengeKey = params.get("state");
-    const authCode = params.get("code");
+  if (!code || !state) return c.text("Missing params", 400);
 
-    if (!authCode || !codeChallengeKey) {
-      return c.text("Missing code or state", 400);
-    }
+  const verifier = c.env.CODE_VERIFIER_STORE.get(state);
+  if (!verifier) return c.text("Invalid state", 400);
 
-    // Retrieve code_verifier from server storage
-    const codeVerifier = c.env.CODE_VERIFIER_STORE.get(codeChallengeKey);
-    if (!codeVerifier) {
-      return c.text("Invalid or expired state", 400);
-    }
+  const cfg = await getConfig();
+  const body = new URLSearchParams({
+    grant_type: "authorization_code",
+    code,
+    client_id: process.env.CLIENT_ID!,
+    client_secret: process.env.CLIENT_SECRET!,
+    redirect_uri: "http://localhost:5173/oauth/callback",
+    code_verifier: verifier,
+  });
 
-    const body = new URLSearchParams({
-      grant_type: "authorization_code",
-      code: authCode,
-      client_id: process.env.AUTH_CLIENT_ID!,
-      client_secret: process.env.AUTH_CLIENT_SECRET!,
-      redirect_uri: `${"http://localhost:3000"}/AUTH/callback`,
-      code_verifier: codeVerifier,
-    });
+  const res = await fetch(cfg.token_endpoint, {
+    method: "POST",
+    body,
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  });
 
-    const res = await fetch(process.env.AUTH_TOKEN_URL!, {
-      method: "POST",
-      body,
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Accept: "application/json",
-      },
-    });
+  const tokens = await res.json();
+  // Save tokens in cookie
+  c.header(
+    "Set-Cookie",
+    `access_token=${tokens.access_token}; Path=/; HttpOnly`
+  );
 
-    const data = await res.json();
-
-    console.log("AUThß token response:", data);
-    console.log("Decoded ID Token:");
-
-    return c.json({ data });
-  } catch (err) {
-    console.error("Callback error:", err);
-    return c.text("Error during callback", 500);
-  }
-};
+  return c.redirect("/me");
+});

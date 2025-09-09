@@ -1,32 +1,27 @@
-// auth-handler.ts
-import { genChallenge } from "../../../utils/challenge.util.js";
-import type { Context } from "hono";
+// src/routes/oauth/authorize.tsx
+import { createRoute } from "honox/factory";
+import { getConfig } from "../../../utils/open-id.util";
+import { genChallenge } from "../../../utils/challenge.util";
+export default createRoute(async (c) => {
+  const cfg = await getConfig();
 
-export const authHandler = async (c: Context) => {
-  try {
-    const authUrl = new URL(process.env.AHAM_AUTH_URL!);
-    authUrl.searchParams.set("client_id", process.env.AHAM_CLIENT_ID!);
-    authUrl.searchParams.set(
-      "redirect_uri",
-      `${"http://localhost:8081"}/oauth/callback`
-    );
-    authUrl.searchParams.set("response_type", "code");
-    authUrl.searchParams.set("scope", "openid profile email");
-    authUrl.searchParams.set("access_type", "offline");
+  const { challenge, verifier, method } = await genChallenge();
+  const state = crypto.randomUUID();
 
-    // Handle Code Challenge
-    const codeChallengeKey = crypto.randomUUID();
-    const code = await genChallenge();
+  // Save verifier in memory/session (demo only)
+  c.env.CODE_VERIFIER_STORE.set(state, verifier);
 
-    c.env.CODE_VERIFIER_STORE.set(codeChallengeKey, code.verifier);
+  const authUrl = new URL(cfg.authorization_endpoint);
+  authUrl.searchParams.set("client_id", process.env.CLIENT_ID!);
+  authUrl.searchParams.set(
+    "redirect_uri",
+    "http://localhost:5173/oauth/callback"
+  );
+  authUrl.searchParams.set("response_type", "code");
+  authUrl.searchParams.set("scope", "openid profile email");
+  authUrl.searchParams.set("state", state);
+  authUrl.searchParams.set("code_challenge", challenge);
+  authUrl.searchParams.set("code_challenge_method", method);
 
-    authUrl.searchParams.set("state", codeChallengeKey); // CSRF protection
-    authUrl.searchParams.set("code_challenge", code.challenge);
-    authUrl.searchParams.set("code_challenge_method", code.method);
-
-    return c.redirect(authUrl.toString());
-  } catch (err) {
-    console.error("Auth Handler error:", err);
-    return c.text("Error initiating OAuth", 500);
-  }
-};
+  return c.redirect(authUrl.toString());
+});
