@@ -1,21 +1,17 @@
 import { createRoute } from "honox/factory";
-import { accessTokenCookie } from "../../utils/http.util";
-import { Header } from "../components/Header";
-
-export const GET = createRoute((c) => {
-  const accessToken = accessTokenCookie.get(c);
-  return c.json({ login: !!accessToken });
-});
+import Login from "../islands/login";
+import { getCookie, setCookie } from "hono/cookie";
 
 export default createRoute((c) => {
-  const accessToken = accessTokenCookie.get(c);
+  const accessToken = getCookie(c, "access_token");
+
+  if (!accessToken) {
+    return c.render(<Login />);
+  }
 
   return c.render(
-    <>
-      <Header login={!!accessToken} />
-      <main class="py-12 text-center bg-gray-50 min-h-screen">
-        <h2 class="text-4xl font-bold text-gray-800">Main Content</h2>
-      </main>
-    </>
+    <main class="py-12 text-center bg-gray-50 min-h-screen">
+      <h2 class="text-4xl font-bold text-gray-800">Main Content (Logged In)</h2>
+    </main>
   );
 });
