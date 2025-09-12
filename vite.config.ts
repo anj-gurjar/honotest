@@ -6,7 +6,7 @@ import { defineConfig } from "vite";
 
 process.loadEnvFile(".env");
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   server: { port: +process.env.PORT! },
   plugins: [
     honox({
@@ -17,4 +17,15 @@ export default defineConfig({
     tailwindcss(),
     build(),
   ],
-});
+  ssr: {
+    noExternal: ["honox", "react", "react-dom"],
+  },
+  resolve: {
+    alias: {},
+  },
+  build: {
+    rollupOptions: {
+      external: mode === "client" ? ["node:async_hooks"] : [],
+    },
+  },
+}));
