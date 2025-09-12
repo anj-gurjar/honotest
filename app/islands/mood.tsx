@@ -1,4 +1,5 @@
-import Raect, { useState } from "react";
+import { useState } from "hono/jsx";
+
 type MoodeProps = {
   data: string[];
 };

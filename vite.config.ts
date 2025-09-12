@@ -17,15 +17,4 @@ export default defineConfig(({ mode }) => ({
     tailwindcss(),
     build(),
   ],
-  ssr: {
-    noExternal: ["honox", "react", "react-dom"],
-  },
-  resolve: {
-    alias: {},
-  },
-  build: {
-    rollupOptions: {
-      external: mode === "client" ? ["node:async_hooks"] : [],
-    },
-  },
 }));
