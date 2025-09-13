@@ -1,7 +1,15 @@
 export const songs = {
   sad: [
-    { id: 1, title: "Sad Song 1", url: "/songs/sad1.mp3" },
-    { id: 2, title: "Sad Song 2", url: "/songs/sad2.mp3" },
+    {
+      id: 1,
+      title: "Sad",
+      url: "https://youtu.be/0Io7GJmjhzo?si=Y3cf3Z5CzvxD67y-",
+    },
+    {
+      id: 2,
+      title: "Sad",
+      url: "https://youtu.be/0Io7GJmjhzo?si=Y3cf3Z5CzvxD67y-",
+    },
   ],
   happy: [
     { id: 1, title: "Happy Song 1", url: "/songs/happy1.mp3" },
@@ -11,6 +19,8 @@ export const songs = {
     { id: 1, title: "Bhajan 1", url: "/songs/bhajan1.mp3" },
     { id: 2, title: "Bhajan 2", url: "/songs/bhajan2.mp3" },
   ],
+  excited: [],
+  relaxed: [],
 };
 
 interface Props {
@@ -21,7 +31,7 @@ export default function Playlist({ mood }: Props) {
   const moodSongs = songs[mood as keyof typeof songs] || [];
 
   if (!moodSongs.length) {
-    return <p>No songs found for mood "{mood}"</p>;
+    return <p class="p-6 text-center">No songs found for mood "{mood}"</p>;
   }
 
   return (

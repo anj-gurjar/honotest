@@ -3,6 +3,7 @@ import Login from "../islands/login";
 import { getCookie, setCookie } from "hono/cookie";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
+import { Mood } from "../islands/mood";
 
 export default createRoute((c) => {
   const accessToken = getCookie(c, "access_token");
@@ -10,7 +11,7 @@ export default createRoute((c) => {
   if (!accessToken) {
     return c.render(<Login />);
   }
-
+  const moods = ["Sad", "Happy"];
   return c.render(
     <div>
       <Header login />
@@ -23,13 +24,7 @@ export default createRoute((c) => {
 
         {/* Mood Selector */}
         <div className="mt-6">
-          <select className="border rounded px-4 py-2">
-            <option value="happy">😊 Happy</option>
-            <option value="sad">😔 Sad</option>
-            <option value="spiritual">🧘 Spiritual</option>
-            <option value="excited">🎉 Excited</option>
-            <option value="relaxed">😌 Relaxed</option>
-          </select>
+          <Mood data={moods} />
         </div>
       </section>
       <Footer />

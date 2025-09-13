@@ -1,12 +1,8 @@
-import Playlist from "../../islands/playlist";
+import { createRoute } from "honox/factory";
+import Playlist from "../../components/playlist";
 
-export default function PlaylistPage(c: any) {
+export default createRoute((c) => {
   const url = new URL(c.req.url);
   const mood = url.searchParams.get("mood") || "";
-
-  return (
-    <div class="flex justify-center items-center min-h-screen bg-gray-50">
-      <Playlist mood={mood} />
-    </div>
-  );
-}
+  return c.render(<Playlist mood={mood} />);
+});

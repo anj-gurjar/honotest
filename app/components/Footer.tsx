@@ -1,9 +1,9 @@
-import hono from "hono";
+import { FC } from "hono/jsx";
 
-export const Footer = () => {
+export const Footer: FC = () => {
   return (
-    <>
-      <h1 class="text-center mt-2.5"> @App is start 2025</h1>
-    </>
+    <footer class="bg-blue-200 py-3 mt-4">
+      <h1 class="text-center text-xl font-bold">@App started 2025</h1>
+    </footer>
   );
 };

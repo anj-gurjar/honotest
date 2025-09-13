@@ -11,8 +11,8 @@
   "dependencies": {
     "drizzle-kit": "^0.31.4",
     "drizzle-orm": "^0.44.5",
-    "hono": "^4.9.6",
-    "honox": "^0.1.45",
+    "hono": "^4.9.7",
+    "honox": "^0.1.46",
     "jose": "^6.1.0",
     "jsonwebtoken": "^9.0.2",
     "jwk-to-pem": "^2.0.7",
