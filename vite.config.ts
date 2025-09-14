@@ -12,9 +12,11 @@ export default defineConfig(({ mode }) => ({
     honox({
       devServer: { adapter },
       client: { input: ["./app/style.css"] },
-      external: ["pg"],
     }),
     tailwindcss(),
     build(),
   ],
+  ssr: {
+    external: ["pg"],
+  },
 }));

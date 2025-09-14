@@ -1,16 +1,12 @@
-import * as jose from "jose";
-import { getJwkByKid } from "../utils/open-id.util";
+import { verify } from "jsonwebtoken";
+import { accessTokenKey, idTokenKey } from "./open-id.util";
 
-export async function verifyToken(token: string) {
-  const { payload, protectedHeader } = jose.decodeJwt(token);
-  const kid = (protectedHeader as any).kid;
-
-  const jwk = await getJwkByKid(kid);
-  if (!jwk) throw new Error("No matching JWK found");
-
-  const key = await jose.importJWK(jwk, jwk.alg);
-
-  return await jose.jwtVerify(token, key, {
-    algorithms: ["RS256"],
-  });
+interface Payload {
+  token: string;
 }
+export const verifyIdToken = (token: string): Payload => {
+  return verify(token, idTokenKey as any) as Payload;
+};
+export const verifyAccessToken = (token: string): Payload => {
+  return verify(token, accessTokenKey as any) as Payload;
+};

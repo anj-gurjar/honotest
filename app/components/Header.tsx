@@ -1,23 +1,37 @@
-import { Link } from "honox/server";
+import { getCookie } from "hono/cookie";
+import type { Context } from "hono";
 
+interface HeaderProps {
+  c?: Context; // अगर server-side render कर रहे हो तो context से token निकाल सकते हो
+}
 
-type HeaderProps = {
-  login: boolean;
-};
+export function Header({ c }: HeaderProps) {
+  let isLoggedIn = false;
 
-export function Header({ login }: HeaderProps) {
+  // अगर SSR context है → cookie check कर लो
+  if (c) {
+    const token = getCookie(c, "access_token");
+    isLoggedIn = !!token;
+  }
+
   return (
-    <header class="flex justify-between items-center p-4 bg-gray-200">
-      <h1 class="text-xl font-bold">AG</h1>
+    <header className="flex justify-between items-center p-4 bg-gray-800 text-white">
+      <h1 className="text-xl font-bold">MyApp</h1>
 
-      {login ? (
-        <Link href="/logout" class="text-yellow-600">
+      {isLoggedIn ? (
+        <a
+          href="/logout"
+          className="px-3 py-1 rounded bg-red-600 hover:bg-red-700"
+        >
           Logout
-        </Link>
+        </a>
       ) : (
-        <Link href="/oauth/authorize" class="text-yellow-600">
+        <a
+          href="/login"
+          className="px-3 py-1 rounded bg-blue-600 hover:bg-blue-700"
+        >
           Login
-        </Link>
+        </a>
       )}
     </header>
   );

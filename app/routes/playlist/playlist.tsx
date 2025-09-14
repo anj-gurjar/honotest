@@ -1,5 +1,5 @@
 import { createRoute } from "honox/factory";
-import Playlist from "../../components/playlist";
+import Playlist from "../../islands/playlist";
 
 export default createRoute((c) => {
   const url = new URL(c.req.url);

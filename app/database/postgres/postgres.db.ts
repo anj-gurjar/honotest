@@ -1,5 +1,4 @@
 import pg from "pg";
-
 import { drizzle } from "drizzle-orm/node-postgres";
 import { attemptsTable } from "../../core/attempt/attempt.schema";
 
