@@ -10,8 +10,9 @@ export default async function GET(c: Context) {
   try {
     const accessToken = accessTokenCookie.get(c);
     console.log(accessToken);
+
     if (!accessToken) {
-      return Response.redirect("/oauth/authorize");
+      return c.redirect("/oauth/authorize");
     }
 
     if (!comresult.revocation_endpoint) {
@@ -38,8 +39,10 @@ export default async function GET(c: Context) {
       console.error("Fetch to revocation endpoint failed:", err);
     }
 
-    const callbackUrl = new URL(c.req.url);
-    callbackUrl.pathname += "/callback";
+    // const scheme = c.req.header("x-forwarded-proto") || "http";
+    // const host = c.req.header("host") || "localhost:5173";
+    // const baseUrl = `${scheme}://${host}`;
+    const callbackUrl = new URL("/logout/callback");
 
     if (!comresult.end_session_endpoint) {
       console.error("End session endpoint not defined");
@@ -57,11 +60,9 @@ export default async function GET(c: Context) {
       endSessionUrl.searchParams.set("id_token_hint", idToken);
     }
 
-    // accessTokenCookie.delete(c);
-    // idTokenCookie.delete(c);
-    // refreshTokenCookie.delete(c);
-
-    // return c.redirect(endSessionUrl.toString());
+    accessTokenCookie.delete(c);
+    idTokenCookie.delete(c);
+    refreshTokenCookie.delete(c);
 
     return c.redirect("/login");
   } catch (err) {

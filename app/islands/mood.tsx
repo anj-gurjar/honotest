@@ -5,19 +5,9 @@ type MoodProps = {
 };
 
 const saveMoodHistory = (m: string) => {
+  if (typeof window === "undefined") return;
   const today = new Date().toISOString().split("T")[0];
   const history = JSON.parse(localStorage.getItem("moodHistory") || "[]");
-
-  const existingIndex = history.findIndex((h: any) => h.date === today);
-
-  if (existingIndex !== -1) {
-    history[existingIndex].mood = m;
-  } else {
-    history.push({ date: today, mood: m });
-  }
-
-  localStorage.setItem("moodHistory", JSON.stringify(history));
-  console.log(history);
 };
 
 export const Mood = ({ data }: MoodProps) => {

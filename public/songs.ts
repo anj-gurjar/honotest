@@ -4,9 +4,14 @@ export const songs: Record<
 > = {
   sad: [
     {
-      id: 1,
+      id: 2,
       title: "Sad Song 1",
       url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
+    },
+    {
+      id: 1,
+      title: "Sad Song 1",
+      url: "/sounds/breath3mp3",
     },
     {
       id: 2,
