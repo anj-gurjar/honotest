@@ -4,34 +4,45 @@ type MoodProps = {
   data: string[];
 };
 
-const saveMoodHistory = (m: string) => {
-  if (typeof window === "undefined") return;
-  const today = new Date().toISOString().split("T")[0];
-  const history = JSON.parse(localStorage.getItem("moodHistory") || "[]");
-};
-
 export const Mood = ({ data }: MoodProps) => {
   const [mood, setMood] = useState("");
   const [speak, setSpeak] = useState("");
+  const [isBreathing, setIsBreathing] = useState(false);
 
+  // Triggered automatically when `speak` changes
   useEffect(() => {
-    handleVoiceMood();
-  }, [speak]);
+    if (speak) {
+      startBreathSession(speak);
+    }
+  }, [speak]); // <- dependency array ensures it runs only when `speak` updates
+
+  const saveMoodHistory = (m: string) => {
+    if (typeof window === "undefined") return;
+    const today = new Date().toISOString().split("T")[0];
+    const history = JSON.parse(localStorage.getItem("moodHistory") || "[]");
+    history.push({ date: today, mood: m });
+    localStorage.setItem("moodHistory", JSON.stringify(history));
+  };
+
+  const startBreathSession = (selectedMood: string) => {
+    setIsBreathing(true);
+    setTimeout(() => {
+      setIsBreathing(false);
+      window.location.href = `/playlist/playlist?mood=${selectedMood}`;
+    }, 3000); // 3-second breathing
+  };
 
   const handleChange = (e: Event) => {
     const target = e.target as HTMLSelectElement;
     const value = target.value.toLowerCase();
     setMood(value);
+    setSpeak(value); // <- triggers useEffect automatically
     saveMoodHistory(value);
-
-    if (value) {
-      window.location.href = `/playlist/playlist?mood=${value}`;
-    }
   };
 
   const handleVoiceMood = () => {
-    const synth = window.speechSynthesis;
-    synth.speak(new SpeechSynthesisUtterance("How is your mood?"));
+    const msg = new SpeechSynthesisUtterance("Tell me your mood");
+    window.speechSynthesis.speak(msg);
 
     const recognition = new ((window as any).SpeechRecognition ||
       (window as any).webkitSpeechRecognition)();
@@ -40,16 +51,13 @@ export const Mood = ({ data }: MoodProps) => {
 
     recognition.onresult = (event: any) => {
       const answer = event.results[0][0].transcript.toLowerCase();
-      console.log(answer);
-
       const answermood = data.find((m) => answer.includes(m.toLowerCase()));
       if (answermood) {
         setMood(answermood.toLowerCase());
-        setSpeak(answermood);
+        setSpeak(answermood); // <- triggers useEffect automatically
         saveMoodHistory(answermood.toLowerCase());
-        window.location.href = `/playlist/playlist?mood=${answermood.toLowerCase()}`;
       } else {
-        alert("please tell me again!");
+        alert("Please tell me again!");
       }
     };
 
@@ -59,11 +67,11 @@ export const Mood = ({ data }: MoodProps) => {
   };
 
   return (
-    <div class="flex flex-col gap-2 max-w-sm mx-auto ">
+    <div class="flex flex-col gap-2 max-w-sm mx-auto">
       <select
         value={mood}
         onChange={handleChange}
-        class="border px-3 py-2 rounded text-sm max-md:"
+        class="border px-3 py-2 rounded text-sm"
       >
         <option value="">-- Select Mood --</option>
         {data.map((item, index) => (
@@ -75,9 +83,13 @@ export const Mood = ({ data }: MoodProps) => {
 
       <button
         onClick={handleVoiceMood}
-        class="w-full  bg-green-400 text-white text-sm px-2 py-2 rounded mt-2 width"
+        class="w-full bg-green-400 text-white text-sm px-2 py-2 rounded mt-2"
       >
-        <p>{speak ? `You said: ${speak}` : "tell me "}</p>
+        {isBreathing
+          ? "Breathing in... Exhale..."
+          : speak
+          ? `You said: ${speak}`
+          : "Tell me your mood"}
       </button>
     </div>
   );

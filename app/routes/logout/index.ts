@@ -8,10 +8,10 @@ import { comresult } from "../../../utils/open-id.util";
 
 export default async function GET(c: Context) {
   try {
-    const accessToken = accessTokenCookie.get(c);
-    console.log(accessToken);
+    const refressToken = refreshTokenCookie.get(c);
+    console.log(refressToken);
 
-    if (!accessToken) {
+    if (!refressToken) {
       return c.redirect("/oauth/authorize");
     }
 
@@ -20,33 +20,35 @@ export default async function GET(c: Context) {
       return c.redirect("/");
     }
 
-    try {
-      const res = await fetch(comresult.revocation_endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token: accessToken,
-          client_id: process.env.CLIENT_ID,
-          client_secret: process.env.CLIENT_SECRET,
-          token_type_hint: "access_token",
-        }),
-      });
-
-      if (!res.ok) {
-        console.error("Token revocation failed", await res.text());
+    async (token: string) => {
+      try {
+        const res = await fetch(comresult.revocation_endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token,
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET,
+            token_type_hint: "access_token | refress_token",
+          }),
+        });
+        if (!res.ok) {
+          console.error("Token revocation failed", await res.text());
+        }
+      } catch (err) {
+        console.error("Fetch to revocation endpoint failed:", err);
       }
-    } catch (err) {
-      console.error("Fetch to revocation endpoint failed:", err);
-    }
+    };
 
     // const scheme = c.req.header("x-forwarded-proto") || "http";
     // const host = c.req.header("host") || "localhost:5173";
     // const baseUrl = `${scheme}://${host}`;
-    const callbackUrl = new URL("/logout/callback");
+    const callbackUrl = new URL(c.req.url);
+    callbackUrl.pathname += "/callback";
 
     if (!comresult.end_session_endpoint) {
       console.error("End session endpoint not defined");
-      return c.redirect("/oauth/authorize");
+      return c.redirect("/");
     }
 
     const endSessionUrl = new URL(comresult.end_session_endpoint);
@@ -64,7 +66,9 @@ export default async function GET(c: Context) {
     idTokenCookie.delete(c);
     refreshTokenCookie.delete(c);
 
-    return c.redirect("/login");
+    if (c.res.ok) {
+      return c.redirect("/");
+    }
   } catch (err) {
     console.error("Logout failed:", err);
     return c.redirect("/oauth/authorize");

@@ -32,7 +32,7 @@ interface Jwks {
   keys: (JsonWebKey & { kid: string })[];
 }
 
-// 1️⃣ Fetch OIDC configuration safely
+
 let _result: Response;
 try {
   if (!process.env.AHAM_AUTH_URL) {
@@ -41,6 +41,7 @@ try {
   _result = await fetch(
     `${process.env.AHAM_AUTH_URL}/.well-known/openid-configuration`
   );
+  console.log(_result);
   if (!_result.ok) {
     throw new Error(
       `Failed to fetch OIDC config: ${_result.status} ${_result.statusText}`
@@ -51,10 +52,8 @@ try {
   throw err;
 }
 
-// 2️⃣ Parse config
 export const comresult: Config = await _result.json();
 
-// 3️⃣ Fetch JWKS safely
 let _jwksRes: Response;
 try {
   if (!comresult.jwks_uri) {
@@ -71,10 +70,10 @@ try {
   throw err;
 }
 
-// 4️⃣ Parse JWKS
+//
 export const jwks: Jwks = await _jwksRes.json();
 
-// 5️⃣ Extract keys
+//
 export const idTokenKey = jwks.keys.find(
   (key) => key.kid === process.env.ID_TOKEN_KID
 );
@@ -82,7 +81,6 @@ console.log(idTokenKey);
 export const accessTokenKey = jwks.keys.find(
   (key) => key.kid === process.env.ACCESS_TOKEN_KID
 );
-
 
 if (!idTokenKey) {
   console.warn("ID Token Key not found for the given ID_TOKEN_KID");

@@ -42,7 +42,7 @@ export const refreshTokenCookie = new CookieHandler("REFRESH_TOKEN", {
   sameSite: "Strict",
   httpOnly: true,
   secure: false,
-  path: "/token",
+  path: "/",
 });
 
 export const idTokenCookie = new CookieHandler("ID_TOKEN", {

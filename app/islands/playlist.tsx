@@ -1,12 +1,11 @@
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
-import { songs as allSongs } from "../../public/songs";
+import { songs as allSongs } from "../../songs";
 import { useEffect, useRef, useState } from "hono/jsx";
 
 export default function Playlist() {
   const [mood, setMood] = useState("sad"); // default
   const audioRefs = useRef<HTMLAudioElement[]>([]);
-
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -27,8 +26,7 @@ export default function Playlist() {
     }
   }, []);
 
-  if(mood==='sad'){
-    
+  if (mood === "sad") {
   }
   const selectmood = mood === "sad" ? "motivation" : mood;
   const moodSongs = allSongs[selectmood as keyof typeof allSongs] || [];

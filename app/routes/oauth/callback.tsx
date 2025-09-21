@@ -51,6 +51,8 @@ export default createRoute(async (c) => {
       return c.text("Token request failed", 500);
     }
 
+
+
     const result: TokenRes = await res.json();
     console.log("Token response:", result);
 
